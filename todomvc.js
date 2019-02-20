@@ -79,7 +79,7 @@ const todomvc = {
 	_onclickClear() {
 		Object.entries( this.data ).forEach( kv => {
 			if ( kv[ 1 ].done ) {
-			delete this.data[ kv[ 0 ] ];
+				delete this.data[ kv[ 0 ] ];
 			}
 		} );
 	},
