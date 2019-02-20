@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="reset.css"/>
+<link rel="stylesheet" href="todomvc.css"/>
+</head>
+<body>
+
+<div id="todomvc">
+	<div id="todomvc-title">todos</div>
+	<div id="todomvc-content">
+		<form id="todomvc-form">
+			<input id="todomvc-submit" type="submit"/>
+			<button id="todomvc-checkAll"></button>
+			<input id="todomvc-input" type="text" placeholder="What needs to be done?" autocomplete="off"/>
+		</form>
+		<div id="todomvc-todos-wrap">
+			<div id="todomvc-todos"></div>
+			<div id="todomvc-footer">
+				<span id="todomvc-todos-left"></span>
+				<a class="todomvc-filter" data-filter="" href="#/">All</a>
+				<a class="todomvc-filter" data-filter="active" href="#/active">Active</a>
+				<a class="todomvc-filter" data-filter="completed" href="#/completed">Completed</a>
+				<button id="todomvc-clear">Clear completed</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="todomvc-todo">
+	<div class="todomvc-todo-checkbox"></div>
+	<form class="todomvc-todo-form">
+		<input class="todomvc-todo-input" type="text" readonly/>
+	</form>
+	<button class="todomvc-todo-delete"></button>
+</div>
+
+<div id="footer">
+	<p>Double-click to edit a todo</p>
+	<p>Created by <a href="http://github.com/mr21/">mr21</a></p>
+	<p>Not part of <a href="http://todomvc.com">TodoMVC</a></p>
+</div>
+
+<script>function lg( a ) { return console.log.apply( console, arguments ), a; }</script>
+<script src="todomvc.js"></script>
+<script>
+"use strict";
+
+const todos = localStorage.getItem( "todos" );
+
+todomvc.init();
+
+if ( todos ) {
+	Object.entries( JSON.parse( todos ) )
+		.sort( ( a, b ) => a[ 1 ].order < b[ 1 ].order ? -1 : a[ 1 ].order > b[ 1 ].order ? 1 : 0 )
+		.forEach( ( [ id, obj ] ) => {
+			todomvc.data[ id ] = obj;
+		} );
+}
+
+window.onbeforeunload = () => {
+	localStorage.setItem( "todos", JSON.stringify( todomvc.data) );
+};
+</script>
+</body>
+</html>
