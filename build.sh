@@ -6,6 +6,7 @@ declare -a HEADER=(
 	'<head>'
 	'<title>TodoMVC • Simple</title>'
 	'<meta charset="UTF-8"/>'
+	'<link rel="shortcut icon" href="favicon.ico">'
 	'<meta name="viewport" content="width=device-width, user-scalable=no"/>'
 	'<meta name="description" content="A simple implementation of the famous TodoMVC"/>'
 )
