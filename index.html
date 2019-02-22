@@ -32,7 +32,7 @@ body {
   text-decoration: none;
 }
 .todomvc {
-	width: 550px;
+	max-width: 550px;
 }
 
 /* ......................................................................... */
@@ -366,7 +366,7 @@ class TodoMVC {
 	_onclickClear() {
 		Object.entries( this.data ).forEach( kv => {
 			if ( kv[ 1 ].done ) {
-			delete this.data[ kv[ 0 ] ];
+				delete this.data[ kv[ 0 ] ];
 			}
 		} );
 	}
