@@ -1,28 +1,28 @@
-#todomvc {
+.todomvc {
 	width: 550px;
 }
 
 /* ......................................................................... */
-#todomvc-title {
+.todomvc-title {
 	font-size: 100px;
 	text-align: center;
 	color: rgba( 175, 47, 47, .15 );
 }
-#todomvc-content {
+.todomvc-content {
 	font-size: 24px;
 	box-shadow:
 		0 2px 4px 0 rgba( 0, 0, 0, .2 ),
 		0 25px 50px 0 rgba( 0, 0, 0, .1 );
 }
 
-/* #todomvc-form */
+/* .todomvc-form */
 /* ......................................................................... */
-#todomvc-form {
+.todomvc-form {
 	display: flex;
 	position: relative;
 	background-color: #fff;
 }
-#todomvc-checkAll {
+.todomvc-checkAll {
 	border: 0;
 	padding: 0;
 	width: 48px;
@@ -31,22 +31,22 @@
 	background: none;
 	transition: .2s opacity;
 }
-.todomvc-allDone #todomvc-checkAll {
+.todomvc-allDone .todomvc-checkAll {
 	opacity: .6;
 }
-.todomvc-allDone.todomvc-nothingDone #todomvc-checkAll {
+.todomvc-allDone.todomvc-nothingDone .todomvc-checkAll {
 	opacity: 0;
 }
-#todomvc-checkAll::before {
+.todomvc-checkAll::before {
 	content: "❯";
 	font-size: 22px;
 	display: block;
 	transform: rotate( 90deg );
 }
-#todomvc-submit {
+.todomvc-submit {
 	display: none;
 }
-#todomvc-input {
+.todomvc-input {
 	flex: 1;
 	height: 64px;
 	font: inherit;
@@ -54,15 +54,15 @@
 	padding: 0 16px 0 8px;
 	background: none;
 }
-#todomvc-input::placeholder {
+.todomvc-input::placeholder {
 	font-style: italic;
 	color: inherit;
 	opacity: .2;
 }
 
-/* #todomvc-footer */
+/* .todomvc-footer */
 /* ......................................................................... */
-#todomvc-footer {
+.todomvc-footer {
 	display: flex;
 	align-items: center;
 	position: relative;
@@ -71,10 +71,10 @@
 	background-color: #fff;
 	border-top: 1px solid #ededed;
 }
-#todomvc-todos:empty + #todomvc-footer {
+.todomvc-todos:empty + .todomvc-footer {
 	display: none;
 }
-#todomvc-footer::before {
+.todomvc-footer::before {
 	content: "";
 	position: absolute;
 	left: 0;
@@ -89,11 +89,11 @@
 		0 16px 0 -6px #f6f6f6,
 		0 17px 2px -6px rgba( 0, 0, 0, .2 );
 }
-#todomvc-todos-left {
+.todomvc-todos-left {
 	width: 120px;
 	margin-right: auto;
 }
-#todomvc-clear {
+.todomvc-clear {
 	border: 0;
 	padding: 0;
 	width: 120px;
@@ -104,7 +104,7 @@
 	background: none;
 	margin-left: auto;
 }
-#todomvc:not( .todomvc-somethingToClear ) #todomvc-clear {
+.todomvc:not( .todomvc-somethingToClear ) .todomvc-clear {
 	visibility: hidden;
 	pointer-events: none;
 }
@@ -122,22 +122,22 @@
 .todomvc-filter:hover {
 	border-color: rgba( 175, 47, 47, .1 );
 }
-#todomvc[ data-filter="" ] .todomvc-filter[ data-filter="" ],
-#todomvc[ data-filter="active" ] .todomvc-filter[ data-filter="active" ],
-#todomvc[ data-filter="completed" ] .todomvc-filter[ data-filter="completed" ] {
+.todomvc[ data-filter="" ] .todomvc-filter[ data-filter="" ],
+.todomvc[ data-filter="active" ] .todomvc-filter[ data-filter="active" ],
+.todomvc[ data-filter="completed" ] .todomvc-filter[ data-filter="completed" ] {
 	border-color: rgba( 175, 47, 47, .2 );
 }
 
-/* #todomvc-todos */
+/* .todomvc-todos */
 /* ......................................................................... */
-#todomvc-todos {
+.todomvc-todos {
 	z-index: 1;
 	overflow: hidden;
 	position: relative;
 	background-color: #fff;
 }
-#todomvc[ data-filter="active" ] .todomvc-done,
-#todomvc[ data-filter="completed" ] .todomvc-todo:not( .todomvc-done ) {
+.todomvc[ data-filter="active" ] .todomvc-done,
+.todomvc[ data-filter="completed" ] .todomvc-todo:not( .todomvc-done ) {
 	z-index: 0;
 	opacity: 0;
 	margin-top: -58px;

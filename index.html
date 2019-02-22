@@ -1,28 +1,288 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<link rel="stylesheet" href="reset.css"/>
-<link rel="stylesheet" href="todomvc.css"/>
+<title>TodoMVC • Simple</title>
+<meta charset="UTF-8"/>
+<link rel="shortcut icon" href="favicon.ico">
+<meta name="viewport" content="width=device-width, user-scalable=no"/>
+<meta name="description" content="A simple implementation of the famous TodoMVC"/>
+<style>
+body {
+  margin-top: 70px;
+  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #f5f5f5;
+  color: #4d4d4d;
+}
+
+.todomvc {
+  margin: auto;
+}
+#footer {
+  margin: 65px auto 0;
+  color: #bfbfbf;
+  font-size: 10px;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+#footer a {
+  color: inherit;
+  font-weight: bold;
+}
+#footer a:not( :hover ) {
+  text-decoration: none;
+}
+.todomvc {
+	width: 550px;
+}
+
+/* ......................................................................... */
+.todomvc-title {
+	font-size: 100px;
+	text-align: center;
+	color: rgba( 175, 47, 47, .15 );
+}
+.todomvc-content {
+	font-size: 24px;
+	box-shadow:
+		0 2px 4px 0 rgba( 0, 0, 0, .2 ),
+		0 25px 50px 0 rgba( 0, 0, 0, .1 );
+}
+
+/* .todomvc-form */
+/* ......................................................................... */
+.todomvc-form {
+	display: flex;
+	position: relative;
+	background-color: #fff;
+}
+.todomvc-checkAll {
+	border: 0;
+	padding: 0;
+	width: 48px;
+	opacity: .2;
+	cursor: pointer;
+	background: none;
+	transition: .2s opacity;
+}
+.todomvc-allDone .todomvc-checkAll {
+	opacity: .6;
+}
+.todomvc-allDone.todomvc-nothingDone .todomvc-checkAll {
+	opacity: 0;
+}
+.todomvc-checkAll::before {
+	content: "❯";
+	font-size: 22px;
+	display: block;
+	transform: rotate( 90deg );
+}
+.todomvc-submit {
+	display: none;
+}
+.todomvc-input {
+	flex: 1;
+	height: 64px;
+	font: inherit;
+	border: 0;
+	padding: 0 16px 0 8px;
+	background: none;
+}
+.todomvc-input::placeholder {
+	font-style: italic;
+	color: inherit;
+	opacity: .2;
+}
+
+/* .todomvc-footer */
+/* ......................................................................... */
+.todomvc-footer {
+	display: flex;
+	align-items: center;
+	position: relative;
+	padding: 16px;
+	font-size: 14px;
+	background-color: #fff;
+	border-top: 1px solid #ededed;
+}
+.todomvc-todos:empty + .todomvc-footer {
+	display: none;
+}
+.todomvc-footer::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 100%;
+	pointer-events: none;
+	box-shadow:
+		0 1px 1px rgba( 0, 0, 0, .2 ),
+		0 8px 0 -3px #f6f6f6,
+		0 9px 1px -3px rgba( 0, 0, 0, .2 ),
+		0 16px 0 -6px #f6f6f6,
+		0 17px 2px -6px rgba( 0, 0, 0, .2 );
+}
+.todomvc-todos-left {
+	width: 120px;
+	margin-right: auto;
+}
+.todomvc-clear {
+	border: 0;
+	padding: 0;
+	width: 120px;
+	text-align: right;
+	font: inherit;
+	color: inherit;
+	cursor: pointer;
+	background: none;
+	margin-left: auto;
+}
+.todomvc:not( .todomvc-somethingToClear ) .todomvc-clear {
+	visibility: hidden;
+	pointer-events: none;
+}
+.todomvc-filter {
+	padding: 3px 7px;
+	color: inherit;
+	border: 1px solid transparent;
+	border-radius: 3px;
+	text-decoration: none;
+	transition: .1s border-color;
+}
+.todomvc-filter + .todomvc-filter {
+	margin-left: 8px;
+}
+.todomvc-filter:hover {
+	border-color: rgba( 175, 47, 47, .1 );
+}
+.todomvc[ data-filter="" ] .todomvc-filter[ data-filter="" ],
+.todomvc[ data-filter="active" ] .todomvc-filter[ data-filter="active" ],
+.todomvc[ data-filter="completed" ] .todomvc-filter[ data-filter="completed" ] {
+	border-color: rgba( 175, 47, 47, .2 );
+}
+
+/* .todomvc-todos */
+/* ......................................................................... */
+.todomvc-todos {
+	z-index: 1;
+	overflow: hidden;
+	position: relative;
+	background-color: #fff;
+}
+.todomvc[ data-filter="active" ] .todomvc-done,
+.todomvc[ data-filter="completed" ] .todomvc-todo:not( .todomvc-done ) {
+	z-index: 0;
+	opacity: 0;
+	margin-top: -58px;
+}
+
+/* .todomvc-todo */
+/* ......................................................................... */
+.todomvc-todo {
+	z-index: 1;
+	display: flex;
+	position: relative;
+	align-items: center;
+	height: 58px;
+	border-top: 1px solid #ededed;
+	background-color: #fff;
+	transition: .2s;
+	transition-property: margin-top, opacity;
+}
+.todomvc-todo-checkbox {
+	width: 48px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	user-select: none;
+}
+.todomvc-todo-checkbox::before {
+	content: "";
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	border: 2px solid;
+	box-sizing: border-box;
+	opacity: .2;
+	transition: .2s opacity;
+}
+.todomvc-done .todomvc-todo-checkbox::before {
+	content: "✓";
+	opacity: .5;
+}
+.todomvc-todo-form {
+	flex: 1;
+	height: 100%;
+}
+.todomvc-todo-input {
+	width: 100%;
+	height: 100%;
+	border: 0;
+	padding: 0 10px;
+	box-sizing: border-box;
+	font: inherit;
+	cursor: default;
+	background: none;
+	transition: .2s opacity;
+}
+.todomvc-done .todomvc-todo-input {
+	opacity: .2;
+	text-decoration: line-through;
+}
+.todomvc-todo-input[ readonly ] {
+	outline: 0;
+}
+.todomvc-todo-delete {
+	position: absolute;
+	height: 100%;
+	width: 48px;
+	right: 0;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+	opacity: .3;
+	font-size: 30px;
+	background: none;
+	user-select: none;
+	transition: .2s opacity;
+}
+.todomvc-todo-delete:hover {
+	opacity: .6;
+}
+.todomvc-todo-delete::before {
+	content: "×";
+}
+.todomvc-editing .todomvc-todo-checkbox::before,
+.todomvc-editing .todomvc-todo-delete,
+.todomvc-todo:not( :hover ) .todomvc-todo-delete {
+	display: none;
+}
+</style>
+<script>function lg( a ) { return console.log.apply( console, arguments ), a; }</script>
 </head>
 <body>
-
-<div id="todomvc">
-	<div id="todomvc-title">todos</div>
-	<div id="todomvc-content">
-		<form id="todomvc-form">
-			<input id="todomvc-submit" type="submit"/>
-			<button id="todomvc-checkAll"></button>
-			<input id="todomvc-input" type="text" placeholder="What needs to be done?" autocomplete="off"/>
+<noscript>This app needs JavaScript to run</noscript>
+<div class="todomvc">
+	<div class="todomvc-title">todos</div>
+	<div class="todomvc-content">
+		<form class="todomvc-form">
+			<input class="todomvc-submit" type="submit"/>
+			<button class="todomvc-checkAll"></button>
+			<input class="todomvc-input" type="text" placeholder="What needs to be done?" autocomplete="off"/>
 		</form>
-		<div id="todomvc-todos-wrap">
-			<div id="todomvc-todos"></div>
-			<div id="todomvc-footer">
-				<span id="todomvc-todos-left"></span>
+		<div class="todomvc-todos-wrap">
+			<div class="todomvc-todos"></div>
+			<div class="todomvc-footer">
+				<span class="todomvc-todos-left"></span>
 				<a class="todomvc-filter" data-filter="" href="#/">All</a>
 				<a class="todomvc-filter" data-filter="active" href="#/active">Active</a>
 				<a class="todomvc-filter" data-filter="completed" href="#/completed">Completed</a>
-				<button id="todomvc-clear">Clear completed</button>
+				<button class="todomvc-clear">Clear completed</button>
 			</div>
 		</div>
 	</div>
@@ -35,21 +295,207 @@
 	</form>
 	<button class="todomvc-todo-delete"></button>
 </div>
-
 <div id="footer">
 	<p>Double-click to edit a todo</p>
 	<p>Created by <a href="http://github.com/mr21/">mr21</a></p>
 	<p>Not part of <a href="http://todomvc.com">TodoMVC</a></p>
 </div>
-
-<script>function lg( a ) { return console.log.apply( console, arguments ), a; }</script>
-<script src="todomvc.js"></script>
 <script>
 "use strict";
 
-const todos = localStorage.getItem( "todos" );
+class TodoMVC {
+	constructor() {
+		const root = TodoMVC.template.cloneNode( true ),
+			todos = root.querySelector( ".todomvc-todos" ),
+			form = root.querySelector( ".todomvc-form" ),
+			input = root.querySelector( ".todomvc-input" ),
+			clear = root.querySelector( ".todomvc-clear" ),
+			checkAll = root.querySelector( ".todomvc-checkAll" ),
+			todosLeft = root.querySelector( ".todomvc-todos-left" ),
+			nlTodo = todos.getElementsByClassName( "todomvc-todo" ),
+			nlTodoDone = todos.getElementsByClassName( "todomvc-done" );
 
-todomvc.init();
+		this.rootElement = root;
+		this._nlTodo = nlTodo;
+		this._todolist = todos;
+		this._checkAll = checkAll;
+		this._todosLeft = todosLeft;
+		this._nlTodoDone = nlTodoDone;
+		this._input = input;
+		this._todos = {};
+		form.onsubmit = this._onsubmit.bind( this );
+		clear.onclick = this._onclickClear.bind( this );
+		checkAll.onclick = this._onclickCheckAll.bind( this );
+		window.onhashchange = this._onhashchange.bind( this );
+		this.data = this._proxyCreate();
+		this._onhashchange();
+		this._updateTodosLeft();
+	}
+
+	clear() {
+		Object.keys( this.data ).forEach( todoId => delete this.data[ todoId ] );
+	}
+	load( data ) {
+		this.clear();
+		Object.entries( data ).forEach( kv => this.data[ kv[ 0 ] ] = kv[ 1 ] );
+	}
+
+	// private:
+	_updateTodosLeft() {
+		const nDone = this._nlTodoDone.length,
+			n = this._nlTodo.length - nDone;
+
+		this.rootElement.classList.toggle( "todomvc-allDone", n === 0 );
+		this.rootElement.classList.toggle( "todomvc-nothingDone", nDone === 0 );
+		this.rootElement.classList.toggle( "todomvc-somethingToClear", nDone > 0 );
+		this._todosLeft.textContent = `${ n } item${ n > 1 ? "s" : "" } left`;
+	}
+
+	// events:
+	_onhashchange() {
+		const [, filter ] = location.hash.split( "/" );
+
+		this.rootElement.dataset.filter = filter || "";
+	}
+	_onsubmit() {
+		const name = this._input.value;
+
+		if ( name ) {
+			const todoId = Math.random() + "",
+				order = this._nlTodo.length;
+
+			this._input.value = "";
+			this.data[ todoId ] = { name, order, done: false };
+		}
+		return false;
+	}
+	_onclickCheckAll( e ) {
+		const done = !this.rootElement.classList.contains( "todomvc-allDone" );
+
+		Object.keys( this.data ).forEach( todoId => {
+			this.data[ todoId ].done = done;
+		} );
+	}
+	_onclickClear() {
+		Object.entries( this.data ).forEach( kv => {
+			if ( kv[ 1 ].done ) {
+			delete this.data[ kv[ 0 ] ];
+			}
+		} );
+	}
+
+	// todo:
+	_addTodo( todoId ) {
+		const root = TodoMVC.templateTodo.cloneNode( true ),
+			check = root.querySelector( ".todomvc-todo-checkbox" ),
+			form = root.querySelector( ".todomvc-todo-form" ),
+			input = root.querySelector( ".todomvc-todo-input" ),
+			del = root.querySelector( ".todomvc-todo-delete" ),
+			html = { root, check, input };
+
+		this._todos[ todoId ] = html;
+		root.dataset.id = todoId;
+		del.onclick = this._onclickDeleteTodo.bind( this, todoId );
+		input.onblur =
+		form.onsubmit = this._onsubmitTodo.bind( this, todoId, input );
+		check.onclick = this._onclickTodoCheck.bind( this, todoId );
+		input.onkeydown = this._onkeydownTodo.bind( this, todoId );
+		input.ondblclick = this._ondblclickTodo.bind( this, todoId );
+		this._todolist.append( root );
+	}
+	_deleteTodo( todoId ) {
+		this._todos[ todoId ].root.remove();
+		delete this._todos[ todoId ];
+	}
+	_updateTodo( todoId, prop, val ) {
+		const html = this._todos[ todoId ];
+
+		switch ( prop ) {
+			case "name": html.input.value = val; break;
+			case "done": html.root.classList.toggle( "todomvc-done", val ); break;
+		}
+	}
+	_readonlyTodo( todoId, b ) {
+		const { root, input } = this._todos[ todoId ];
+
+		if ( b ) {
+			this._input.focus();
+			this._input.blur();
+			input.value = this.data[ todoId ].name;
+			input.setAttribute( "readonly", "" );
+			root.classList.remove( "todomvc-editing" );
+		} else {
+			input.removeAttribute( "readonly" );
+			root.classList.add( "todomvc-editing" );
+		}
+	}
+
+	// todo events:
+	_onkeydownTodo( todoId, e ) {
+		if ( e.key === "Escape" ) {
+			this._readonlyTodo( todoId, true );
+		}
+	}
+	_onsubmitTodo( todoId, input ) {
+		this.data[ todoId ].name = input.value;
+		this._readonlyTodo( todoId, true );
+		return false;
+	}
+	_ondblclickTodo( todoId ) {
+		this._readonlyTodo( todoId, false );
+	}
+	_onclickTodoCheck( todoId ) {
+		this.data[ todoId ].done = !this.data[ todoId ].done;
+	}
+	_onclickDeleteTodo( todoId ) {
+		delete this.data[ todoId ];
+	}
+
+	// data:
+	_proxyCreate() {
+		return new Proxy( {}, {
+			set: this._proxyAddTodo.bind( this ),
+			deleteProperty: this._proxyDeleteTodo.bind( this ),
+		} );
+	}
+	_proxyAddTodo( tar, todoId, obj ) {
+		const prox = new Proxy( {}, {
+			set: this._proxyUpdateTodo.bind( this, todoId )
+		} );
+
+		tar[ todoId ] = prox;
+		this._addTodo( todoId );
+		prox.name = obj.name;
+		prox.done = obj.done;
+		prox.order = obj.order;
+		return true;
+	}
+	_proxyDeleteTodo( tar, todoId ) {
+		delete tar[ todoId ];
+		this._deleteTodo( todoId );
+		this._updateTodosLeft();
+		return true;
+	}
+	_proxyUpdateTodo( todoId, tar, prop, val ) {
+		tar[ prop ] = val;
+		this._updateTodo( todoId, prop, val );
+		switch ( prop ) {
+			case "done": this._updateTodosLeft(); break;
+		}
+		return true;
+	}
+}
+
+TodoMVC.template = document.querySelector( ".todomvc" );
+TodoMVC.template.remove();
+
+TodoMVC.templateTodo = document.querySelector( ".todomvc-todo" );
+TodoMVC.templateTodo.remove();
+
+const todos = localStorage.getItem( "todos" ),
+	todomvc = new TodoMVC();
+
+document.body.prepend( todomvc.rootElement );
 
 if ( todos ) {
 	Object.entries( JSON.parse( todos ) )
@@ -60,7 +506,7 @@ if ( todos ) {
 }
 
 window.onbeforeunload = () => {
-	localStorage.setItem( "todos", JSON.stringify( todomvc.data) );
+	localStorage.setItem( "todos", JSON.stringify( todomvc.data ) );
 };
 </script>
 </body>
