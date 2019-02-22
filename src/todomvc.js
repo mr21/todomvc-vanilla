@@ -3,27 +3,18 @@
 class TodoMVC {
 	constructor() {
 		const root = TodoMVC.template.cloneNode( true ),
-			todos = root.querySelector( ".todomvc-todos" ),
-			form = root.querySelector( ".todomvc-form" ),
-			input = root.querySelector( ".todomvc-input" ),
-			clear = root.querySelector( ".todomvc-clear" ),
-			checkAll = root.querySelector( ".todomvc-checkAll" ),
-			todosLeft = root.querySelector( ".todomvc-todos-left" ),
-			nlTodo = todos.getElementsByClassName( "todomvc-todo" ),
-			nlTodoDone = todos.getElementsByClassName( "todomvc-done" );
+			qs = n => root.querySelector( `.todomvc-${ n }` );
 
 		this.rootElement = root;
-		this._nlTodo = nlTodo;
-		this._todolist = todos;
-		this._checkAll = checkAll;
-		this._todosLeft = todosLeft;
-		this._nlTodoDone = nlTodoDone;
-		this._input = input;
-		this._todos = {};
-		form.onsubmit = this._onsubmit.bind( this );
-		clear.onclick = this._onclickClear.bind( this );
-		checkAll.onclick = this._onclickCheckAll.bind( this );
-		window.onhashchange = this._onhashchange.bind( this );
+		this._input = qs( "input" );
+		this._checkAll = qs( "checkAll" );
+		this._todolist = qs( "todos" );
+		this._todosLeft = qs( "todosLeft" );
+		this._nlTodo = this._todolist.getElementsByClassName( "todomvc-todo" );
+		this._nlTodoDone = this._todolist.getElementsByClassName( "todomvc-done" );
+		qs( "form" ).onsubmit = this._onsubmit.bind( this );
+		qs( "clear" ).onclick = this._onclickClear.bind( this );
+		this._checkAll.onclick = this._onclickCheckAll.bind( this );
 		this.data = this._proxyCreate();
 		this._onhashchange();
 		this._updateTodosLeft();
@@ -58,11 +49,10 @@ class TodoMVC {
 		const name = this._input.value;
 
 		if ( name ) {
-			const todoId = Math.random() + "",
-				order = this._nlTodo.length;
+			const todoId = Math.random() + "";
 
 			this._input.value = "";
-			this.data[ todoId ] = { name, order, done: false };
+			this.data[ todoId ] = { name };
 		}
 		return false;
 	}
@@ -82,38 +72,35 @@ class TodoMVC {
 	}
 
 	// todo:
+	_getTodo( id ) {
+		return this._todolist.querySelector( `.todomvc-todo[data-id="${ id }"]` );
+	}
 	_addTodo( todoId ) {
 		const root = TodoMVC.templateTodo.cloneNode( true ),
-			check = root.querySelector( ".todomvc-todo-checkbox" ),
-			form = root.querySelector( ".todomvc-todo-form" ),
-			input = root.querySelector( ".todomvc-todo-input" ),
-			del = root.querySelector( ".todomvc-todo-delete" ),
-			html = { root, check, input };
+			qs = n => root.querySelector( `.todomvc-todo-${ n }` ),
+			input = qs( "input" );
 
-		this._todos[ todoId ] = html;
 		root.dataset.id = todoId;
-		del.onclick = this._onclickDeleteTodo.bind( this, todoId );
-		input.onblur =
-		form.onsubmit = this._onsubmitTodo.bind( this, todoId, input );
-		check.onclick = this._onclickTodoCheck.bind( this, todoId );
+		input.onblur = this._onsubmitTodo.bind( this, todoId, input );
 		input.onkeydown = this._onkeydownTodo.bind( this, todoId );
 		input.ondblclick = this._ondblclickTodo.bind( this, todoId );
+		qs( "form" ).onsubmit = input.onblur;
+		qs( "delete" ).onclick = this._onclickDeleteTodo.bind( this, todoId );
+		qs( "checkbox" ).onclick = this._onclickTodoCheck.bind( this, todoId );
 		this._todolist.append( root );
 	}
 	_deleteTodo( todoId ) {
-		this._todos[ todoId ].root.remove();
-		delete this._todos[ todoId ];
+		this._getTodo( todoId ).remove();
 	}
-	_updateTodo( todoId, prop, val ) {
-		const html = this._todos[ todoId ];
-
-		switch ( prop ) {
-			case "name": html.input.value = val; break;
-			case "done": html.root.classList.toggle( "todomvc-done", val ); break;
-		}
+	_doTodo( todoId, done ) {
+		this._getTodo( todoId ).classList.toggle( "todomvc-done", done );
+	}
+	_renameTodo( todoId, name ) {
+		this._getTodo( todoId ).querySelector( ".todomvc-todo-input" ).value = name;
 	}
 	_readonlyTodo( todoId, b ) {
-		const { root, input } = this._todos[ todoId ];
+		const root = this._getTodo( todoId ),
+			input = root.querySelector( ".todomvc-todo-input" );
 
 		if ( b ) {
 			this._input.focus();
@@ -162,9 +149,9 @@ class TodoMVC {
 
 		tar[ todoId ] = prox;
 		this._addTodo( todoId );
-		prox.name = obj.name;
-		prox.done = obj.done;
-		prox.order = obj.order;
+		prox.name = obj.name || "";
+		prox.done = obj.done || false;
+		prox.order = obj.order || this._nlTodo.length;
 		return true;
 	}
 	_proxyDeleteTodo( tar, todoId ) {
@@ -175,9 +162,14 @@ class TodoMVC {
 	}
 	_proxyUpdateTodo( todoId, tar, prop, val ) {
 		tar[ prop ] = val;
-		this._updateTodo( todoId, prop, val );
 		switch ( prop ) {
-			case "done": this._updateTodosLeft(); break;
+			case "done":
+				this._doTodo( todoId, val );
+				this._updateTodosLeft();
+				break;
+			case "name":
+				this._renameTodo( todoId, val );
+				break;
 		}
 		return true;
 	}
