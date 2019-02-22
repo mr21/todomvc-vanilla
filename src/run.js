@@ -16,3 +16,9 @@ if ( todos ) {
 window.onbeforeunload = () => {
 	localStorage.setItem( "todos", JSON.stringify( todomvc.data ) );
 };
+
+window.onhashchange = () => {
+	todomvc.setFilter( location.hash.split( "/" )[ 1 ] );
+};
+
+window.onhashchange();

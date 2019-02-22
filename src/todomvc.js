@@ -16,7 +16,6 @@ class TodoMVC {
 		qs( "clear" ).onclick = this._onclickClear.bind( this );
 		this._checkAll.onclick = this._onclickCheckAll.bind( this );
 		this.data = this._proxyCreate();
-		this._onhashchange();
 		this._updateTodosLeft();
 	}
 
@@ -26,6 +25,9 @@ class TodoMVC {
 	load( data ) {
 		this.clear();
 		Object.entries( data ).forEach( kv => this.data[ kv[ 0 ] ] = kv[ 1 ] );
+	}
+	setFilter( filter ) {
+		this.rootElement.dataset.filter = filter || "";
 	}
 
 	// private:
@@ -40,11 +42,6 @@ class TodoMVC {
 	}
 
 	// events:
-	_onhashchange() {
-		const [, filter ] = location.hash.split( "/" );
-
-		this.rootElement.dataset.filter = filter || "";
-	}
 	_onsubmit() {
 		const name = this._input.value;
 
